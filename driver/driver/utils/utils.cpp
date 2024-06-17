@@ -19,6 +19,22 @@ uintptr_t utils::find_pattern( const uintptr_t base, const size_t size, const ch
 	return 0;
 }
 
+uintptr_t utils::find_pattern( uintptr_t base, LPCSTR pattern, LPCSTR mask )
+{
+	auto header = ( PIMAGE_NT_HEADERS )( ( PBYTE )base + PIMAGE_DOS_HEADER( base )->e_lfanew );
+	auto section = IMAGE_FIRST_SECTION( header );
+
+	for( auto i = 0; i < header->FileHeader.NumberOfSections; i++, section++ ) {
+		if( !memcmp( section->Name, ".text", 5 ) || !memcpy( section->Name, "PAGE", 4 ) ) {
+			auto addr = find_pattern( base + section->VirtualAddress, section->Misc.VirtualSize, pattern, mask );
+			if( addr )
+				return addr;
+		}
+	}
+
+	return NULL;
+}
+
 FORCEINLINE PVOID kernel_alloc( ULONG size ) {
 	PVOID buffer = ExAllocatePoolWithTag( NonPagedPool, size, 'BOB3' );
 	__stosb( ( PUCHAR )buffer, 0, size );
