@@ -8,5 +8,5 @@ extern fn_operation_callback o_operation_callback;
 class c_communication {
 public:
 	static PVOID operation_callback( packet_base_t&, PBYTE );
-	static NTSTATUS setup( LPCSTR, LPCSTR );
+	static NTSTATUS setup();
 };
