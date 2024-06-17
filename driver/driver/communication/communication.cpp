@@ -1,7 +1,7 @@
 #include "communication.hpp"
 #include "../utils/utils.hpp"
 
-#define RVA(addr, size)			((uintptr_t)(addr + *(DWORD*)(addr + ((size) - 4)) + size))
+#define RVA(addr, size)			((PBYTE)(addr + *(DWORD*)(addr + ((size) - 4)) + size))
 
 fn_operation_callback o_operation_callback = nullptr;
 
@@ -18,7 +18,7 @@ NTSTATUS c_communication::setup( ) {
 	auto ntoskrnl_base = utils::get_system_base( 0, &ntoskrnl_size );
 
 	auto target = utils::find_pattern(
-		ntoskrnl_base,
+		( PVOID )ntoskrnl_base,
 		"\x4C\x8B\x05\x00\x00\x00\x00\x33\xC0\x4D\x85\xC0\x74\x08\x49\x8B\xC0\xE8\x00\x00\x00\x00\xF7\xD8",
 		"xxx????xxxxxxxxxxx????xx"
 	);

@@ -2,7 +2,7 @@
 #include "kernel/kernel.hpp"
 
 namespace utils {
-	uintptr_t find_pattern( const uintptr_t, const size_t, const char*, const char* );
-	uintptr_t find_pattern( uintptr_t, LPCSTR, LPCSTR );
+	PBYTE find_pattern( PVOID module, DWORD size, LPCSTR pattern, LPCSTR mask );
+	PBYTE find_pattern( PVOID base, LPCSTR pattern, LPCSTR mask );
 	uintptr_t get_system_base( LPCSTR, PULONG );
 }

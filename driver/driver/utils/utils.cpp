@@ -10,25 +10,44 @@ bool data_compare( const char* data, const char* mask, const char* sz_mask ) {
 	return !*sz_mask;
 }
 
-uintptr_t utils::find_pattern( const uintptr_t base, const size_t size, const char* mask, const char* sz_mask )
+PBYTE utils::find_pattern( PVOID module, DWORD size, LPCSTR pattern, LPCSTR mask )
 {
-	for( size_t i = 0; i < size; ++i )
-		if( data_compare( reinterpret_cast< const char* >( base + i ), mask, sz_mask ) )
-			return base + i;
+	auto checkMask = []( PBYTE buffer, LPCSTR pattern, LPCSTR mask ) -> BOOL
+		{
+			for( auto x = buffer; *mask; pattern++, mask++, x++ ) {
+				auto addr = *( BYTE* )( pattern );
+				if( addr != *x && *mask != '?' )
+					return FALSE;
+			}
 
-	return 0;
+			return TRUE;
+		};
+
+	for( auto x = 0; x < size - strlen( mask ); x++ ) {
+
+		auto addr = ( PBYTE )module + x;
+		if( checkMask( addr, pattern, mask ) )
+			return addr;
+	}
+
+	return NULL;
 }
 
-uintptr_t utils::find_pattern( uintptr_t base, LPCSTR pattern, LPCSTR mask )
+PIMAGE_NT_HEADERS getHeader( PVOID module ) {
+	return ( PIMAGE_NT_HEADERS )( ( PBYTE )module + PIMAGE_DOS_HEADER( module )->e_lfanew );
+}
+
+PBYTE utils::find_pattern( PVOID base, LPCSTR pattern, LPCSTR mask )
 {
-	auto header = ( PIMAGE_NT_HEADERS )( ( PBYTE )base + PIMAGE_DOS_HEADER( base )->e_lfanew );
+	auto header = getHeader( base );
 	auto section = IMAGE_FIRST_SECTION( header );
 
-	for( auto i = 0; i < header->FileHeader.NumberOfSections; i++, section++ ) {
-		if( !memcmp( section->Name, ".text", 5 ) || !memcpy( section->Name, "PAGE", 4 ) ) {
-			auto addr = find_pattern( base + section->VirtualAddress, section->Misc.VirtualSize, pattern, mask );
-			if( addr )
+	for( auto x = 0; x < header->FileHeader.NumberOfSections; x++, section++ ) {
+		if( !memcmp( section->Name, ".text", 5 ) || !memcmp( section->Name, "PAGE", 4 ) ) {
+			auto addr = find_pattern( ( PBYTE )base + section->VirtualAddress, section->Misc.VirtualSize, pattern, mask );
+			if( addr ) {
 				return addr;
+			}
 		}
 	}
 
