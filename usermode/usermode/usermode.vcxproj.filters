@@ -4,6 +4,7 @@
     <ClCompile Include="entry.cpp" />
     <ClCompile Include="communiction\communication.cpp" />
     <ClCompile Include="utils\utils.cpp" />
+    <ClCompile Include="memory\memory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx\stdafx.hpp" />

@@ -23,6 +23,7 @@ struct memory_t {
 
 	uint64_t process_id = 0;
 	operation_callback operation_callback;
+	std::map<std::string, uint64_t> imports;
 };
 
 template<typename T>
