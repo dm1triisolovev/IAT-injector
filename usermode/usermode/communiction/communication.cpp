@@ -123,3 +123,25 @@ NTSTATUS c_communication::protect_memory( operation_callback operation, ULONGLON
 
 	return status;
 }
+
+NTSTATUS c_communication::free_memory( operation_callback operation, ULONGLONG target_pid, uintptr_t address ) {
+	packet_base_t packet{};
+
+	packet.opcode = e_opcode::FREE_VIRTUAL_MEMORY;
+	packet.side = e_side::SERVER;
+
+	auto& server_req = packet.server.free_memory;
+
+	server_req.target_pid = target_pid;
+	server_req.address = address;
+
+	server_req.code = STATUS_INTERRUPTED;
+
+	operation( packet, 0xDEADBEEF );
+
+	auto client_req = packet.client.free_memory;
+
+	auto status = NTSTATUS( client_req.code );
+
+	return status;
+}
