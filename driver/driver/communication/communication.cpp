@@ -5,11 +5,27 @@
 
 fn_operation_callback o_operation_callback = nullptr;
 
-PVOID c_communication::operation_callback( packet_base_t& packet, PBYTE a2 )
+PVOID c_communication::operation_callback( packet_base_t& packet, ULONG64 magic )
 {
-	DbgPrint( "[ Driver ] Test is working!!!\n" );
+	if( magic == 0xDEADBEEF ) {
 
-	return o_operation_callback( packet, a2 );
+		switch( packet.opcode ) {
+			case e_opcode::TEST: {
+				RtlSecureZeroMemory( &packet.client, sizeof( packet.client ) );
+
+				packet.side = e_side::CLIENT;
+				packet.client.test.is_valid = true;
+
+				DbgPrint( "[ Driver ] Test operation\n" );
+
+				break;
+			}
+			default:
+				break;
+		}
+	}
+
+	return NULL;
 }
 
 NTSTATUS c_communication::setup( ) {

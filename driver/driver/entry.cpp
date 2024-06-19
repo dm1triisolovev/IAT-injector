@@ -11,7 +11,7 @@ NTSTATUS JordEntry( ) {
 		return STATUS_UNSUCCESSFUL;
 	}
 
-	DbgPrint( "[ NESTELL REBORN ] Communication successfully enabled!\n" );
+	DbgPrint( "[ Driver ] Communication successfully enabled!\n" );
 
 	return STATUS_SUCCESS;
 }
