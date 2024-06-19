@@ -24,3 +24,13 @@ uint64_t memory_t::read_chain( uint64_t base, const std::vector<uint64_t>& offse
 
 	return result;
 }
+
+uint64_t memory_t::get_module( std::wstring module_name ) {
+	return c_communication::get_module_base( operation_callback, process_id, module_name );
+}
+
+uint64_t memory_t::allocate( size_t size, uint32_t allocation_type, uint32_t protect ) {
+	uint64_t address = 0;
+	return c_communication::alloc_memory( operation_callback, process_id, size, allocation_type, protect, address );
+}
+
