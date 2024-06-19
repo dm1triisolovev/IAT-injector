@@ -12,12 +12,9 @@ int main( ) {
 	printf( "[ Usermode ] Success!\n\n" );
 
 	bool status = c_communication::test_operation( operation );
-
 	if( !status ) {
-		printf( "[ Usermode ] Failed to test\n" );
+		printf( "[ Usermode ] map driver.sys first\n" );
 	}
-
-	printf( "[ Usermode ] Test okay\n" );
 
 	std::cin.get( );
 	return 0;
