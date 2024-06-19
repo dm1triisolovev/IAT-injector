@@ -126,10 +126,12 @@
   <ItemGroup>
     <ClCompile Include="communication\communication.cpp" />
     <ClCompile Include="entry.cpp" />
+    <ClCompile Include="memory\memory.cpp" />
     <ClCompile Include="utils\utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="communication\communication.hpp" />
+    <ClInclude Include="memory\memory.hpp" />
     <ClInclude Include="operation\operation.hpp" />
     <ClInclude Include="stdafx\stdafx.hpp" />
     <ClInclude Include="utils\kernel\kernel.hpp" />

@@ -1,13 +1,25 @@
 #include "communication.hpp"
+
 #include "../utils/utils.hpp"
+
+#include "../memory/memory.hpp"
 
 #define RVA(addr, size)			((PBYTE)(addr + *(DWORD*)(addr + ((size) - 4)) + size))
 
 fn_operation_callback o_operation_callback = nullptr;
 
-PVOID c_communication::operation_callback( packet_base_t& packet, ULONG64 magic )
+BOOL c_communication::operation_callback( packet_base_t& packet, ULONG64 magic )
 {
 	if( magic == 0xDEADBEEF ) {
+		if( packet.opcode == NONE ) {
+			DbgPrint( "[ Driver ] packet is none\n" );
+			return false;
+		}
+
+		if( packet.side != e_side::SERVER ) {
+			DbgPrint( "[ Driver ] packet side is not server\n" );
+			return false;
+		}
 
 		switch( packet.opcode ) {
 			case e_opcode::TEST: {
@@ -16,16 +28,14 @@ PVOID c_communication::operation_callback( packet_base_t& packet, ULONG64 magic 
 				packet.side = e_side::CLIENT;
 				packet.client.test.is_valid = true;
 
-				DbgPrint( "[ Driver ] Test operation\n" );
-
-				break;
+				return true;
 			}
 			default:
-				break;
+				return false;
 		}
 	}
 
-	return NULL;
+	return o_operation_callback( packet, magic );
 }
 
 NTSTATUS c_communication::setup( ) {

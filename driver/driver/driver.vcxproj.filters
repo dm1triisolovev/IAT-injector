@@ -4,6 +4,7 @@
     <ClCompile Include="entry.cpp" />
     <ClCompile Include="utils\utils.cpp" />
     <ClCompile Include="communication\communication.cpp" />
+    <ClCompile Include="memory\memory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils\stdint\stdint.hpp" />
@@ -12,5 +13,6 @@
     <ClInclude Include="utils\utils.hpp" />
     <ClInclude Include="operation\operation.hpp" />
     <ClInclude Include="communication\communication.hpp" />
+    <ClInclude Include="memory\memory.hpp" />
   </ItemGroup>
 </Project>
