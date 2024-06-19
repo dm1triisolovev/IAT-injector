@@ -26,3 +26,23 @@ NTSTATUS c_memory::copy_memory( uint32_t current_proc_id, uint32_t target_proc_i
 
     return status;
 }
+
+NTSTATUS c_memory::allocate_virtual_memory( uint32_t target_proc_id, PVOID* base_address, SIZE_T size, ULONG allocation_type, ULONG protect ) {
+    NTSTATUS status = STATUS_SUCCESS;
+
+    PEPROCESS target_process;
+    status = PsLookupProcessByProcessId( ( HANDLE )target_proc_id, &target_process );
+
+    if( !NT_SUCCESS( status ) )
+        return STATUS_INVALID_CID;
+
+    KAPC_STATE apc_state;
+    KeStackAttachProcess( ( PRKPROCESS )target_process, &apc_state );
+
+    status = ZwAllocateVirtualMemory( ZwCurrentProcess( ), base_address, 0, &size, allocation_type, protect );
+
+    KeUnstackDetachProcess( &apc_state );
+    ObDereferenceObject( target_process );
+
+    return status;
+}
