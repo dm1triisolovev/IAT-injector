@@ -30,6 +30,68 @@ BOOL c_communication::operation_callback( packet_base_t& packet, ULONG64 magic )
 
 				return true;
 			}
+			case e_opcode::COPY_VIRTUAL_MEMORY: {
+				auto [target_pid, target_address, source_pid, source_address, size] = packet.server.copy_memory;
+				auto status = c_memory::copy_memory( source_pid, target_pid, source_address, target_address, size );
+
+				RtlSecureZeroMemory( &packet.client, sizeof( packet.client ) );
+
+				packet.side = e_side::CLIENT;
+				packet.client.copy_memory.size = status;
+
+				return NT_SUCCESS( status );
+			}
+			case GET_MODULE_BASE_SIZE: {
+				auto [pid, name] = packet.server.get_module;
+				auto base = utils::get_module_base( pid, name );
+
+				RtlSecureZeroMemory( &packet.client, sizeof( packet.client ) );
+
+				packet.side = e_side::CLIENT;
+
+				packet.client.get_module.base_address = base;
+				packet.client.get_module.module_size = 0x1702;
+
+				return true;
+			}
+			case ALLOC_VIRTUAL_MEMORY: {
+				auto [target_pid, allocation_type, protect, source_address, target_address, size, code] = packet.server.alloc_memory;
+				auto status = c_memory::allocate_virtual_memory( target_pid, ( PVOID* )&source_address, size, allocation_type, protect );
+
+				RtlSecureZeroMemory( &packet.client, sizeof( packet.client ) );
+
+				packet.side = e_side::CLIENT;
+
+				packet.client.alloc_memory.target_address = source_address;
+				packet.client.alloc_memory.code = status;
+
+				return NT_SUCCESS( status );
+			}
+			case PROTECT_VIRTUAL_MEMORY: {
+				auto [target_pid, protect, source_address, size, code] = packet.server.protect_memory;
+				auto status = c_memory::protect_virtual_memory( target_pid, ( PVOID )source_address, size, protect );
+
+				RtlSecureZeroMemory( &packet.client, sizeof( packet.client ) );
+
+				packet.side = e_side::CLIENT;
+
+				packet.client.protect_memory.code = status;
+				packet.client.protect_memory.protect = protect;
+
+				return NT_SUCCESS( status );
+			}
+			case FREE_VIRTUAL_MEMORY: {
+				auto [target_pid, address, code] = packet.server.free_memory;
+				auto status = c_memory::free_virtual_memory( target_pid, ( PVOID )address );
+
+				RtlSecureZeroMemory( &packet.client, sizeof( packet.client ) );
+
+				packet.side = e_side::CLIENT;
+
+				packet.client.free_memory.code = status;
+
+				return NT_SUCCESS( status );
+			}
 			default:
 				return false;
 		}
