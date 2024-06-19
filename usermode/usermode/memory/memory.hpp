@@ -14,6 +14,8 @@ struct memory_t {
 	template<typename T>
 	T read( uint64_t address );
 
+	uint64_t read_chain( uint64_t, const std::vector<uint64_t>& );
+
 	uint64_t process_id = 0;
 	operation_callback operation_callback;
 };

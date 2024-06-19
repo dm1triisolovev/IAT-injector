@@ -16,4 +16,11 @@ NTSTATUS memory_t::write_memory( uint64_t address, uintptr_t dst_address, SIZE_T
 	return c_communication::copy_memory( operation_callback, GetCurrentProcessId( ), dst_address, process_id, address, size );
 }
 
+uint64_t memory_t::read_chain( uint64_t base, const std::vector<uint64_t>& offsets ) {
+	uint64_t result = read<uint64_t>( base + offsets.at( 0 ) );
 
+	for( int i = 1; i < offsets.size( ); i++ )
+		result = read<uint64_t>( result + offsets.at( i ) );
+
+	return result;
+}
