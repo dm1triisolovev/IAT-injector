@@ -96,3 +96,30 @@ uint64_t c_communication::alloc_memory( operation_callback operation, ULONGLONG 
 
 	return address;
 }
+
+NTSTATUS c_communication::protect_memory( operation_callback operation, ULONGLONG target_pid, size_t size, uint32_t protect, uintptr_t source_address ) {
+	packet_base_t packet{};
+
+	packet.opcode = e_opcode::PROTECT_VIRTUAL_MEMORY;
+	packet.side = e_side::SERVER;
+
+	auto& server_req = packet.server.protect_memory;
+
+	server_req.target_pid = target_pid;
+	server_req.source_address = source_address;
+
+	server_req.protect = protect;
+
+	server_req.size = size;
+	server_req.code = STATUS_INTERRUPTED;
+
+	operation( packet, 0xDEADBEEF );
+
+	auto client_req = packet.client.protect_memory;
+
+	protect = client_req.protect;
+
+	auto status = NTSTATUS( client_req.code );
+
+	return status;
+}
