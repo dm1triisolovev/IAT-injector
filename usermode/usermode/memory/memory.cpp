@@ -34,3 +34,12 @@ uint64_t memory_t::allocate( size_t size, uint32_t allocation_type, uint32_t pro
 	return c_communication::alloc_memory( operation_callback, process_id, size, allocation_type, protect, address );
 }
 
+NTSTATUS memory_t::protect( uint64_t address, size_t size, uint32_t protect ) {
+	return c_communication::protect_memory( operation_callback, process_id, size, protect, address );
+}
+
+NTSTATUS memory_t::free( uint64_t address ) {
+	return c_communication::free_memory( operation_callback, process_id, address );
+}
+
+std::unique_ptr<memory_t> memory = std::make_unique<memory_t>( );
