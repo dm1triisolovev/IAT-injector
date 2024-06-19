@@ -21,11 +21,14 @@
   <ItemGroup>
     <ClCompile Include="communiction\communication.cpp" />
     <ClCompile Include="entry.cpp" />
+    <ClCompile Include="utils\utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="communiction\communication.hpp" />
+    <ClInclude Include="memory\memory.hpp" />
     <ClInclude Include="operation\operation.hpp" />
     <ClInclude Include="stdafx\stdafx.hpp" />
+    <ClInclude Include="utils\utils.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

@@ -3,10 +3,13 @@
   <ItemGroup>
     <ClCompile Include="entry.cpp" />
     <ClCompile Include="communiction\communication.cpp" />
+    <ClCompile Include="utils\utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx\stdafx.hpp" />
     <ClInclude Include="operation\operation.hpp" />
     <ClInclude Include="communiction\communication.hpp" />
+    <ClInclude Include="utils\utils.hpp" />
+    <ClInclude Include="memory\memory.hpp" />
   </ItemGroup>
 </Project>

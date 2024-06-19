@@ -1,5 +1,7 @@
 #include "communiction/communication.hpp"
 
+#include "utils/utils.hpp"
+
 int main( ) {
 
 	operation_callback operation = c_communication::init( "ntdll.dll", "NtCompareSigningLevels" );
@@ -14,6 +16,17 @@ int main( ) {
 	bool status = c_communication::test_operation( operation );
 	if( !status ) {
 		printf( "[ Usermode ] map driver.sys first\n" );
+	}
+
+	DWORD pid = utils::get_proc_id( "" );
+	if( !pid ) {
+		printf( "\nWaiting for process..." );
+
+		for( ;; Sleep( 200 ) ) {
+			pid = utils::get_proc_id( "" );
+			if( pid )
+				break;
+		}
 	}
 
 
