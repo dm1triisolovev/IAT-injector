@@ -46,3 +46,28 @@ NTSTATUS c_memory::allocate_virtual_memory( uint32_t target_proc_id, PVOID* base
 
     return status;
 }
+
+NTSTATUS c_memory::protect_virtual_memory( uint32_t target_proc_id, PVOID base_address, SIZE_T size, ULONG new_protect ) {
+    NTSTATUS status = STATUS_SUCCESS;
+
+    PEPROCESS target_process;
+    status = PsLookupProcessByProcessId( ( HANDLE )target_proc_id, &target_process );
+
+    if( !NT_SUCCESS( status ) )
+        return STATUS_INVALID_CID;
+
+    KAPC_STATE apc_state;
+    KeStackAttachProcess( ( PRKPROCESS )target_process, &apc_state );
+
+    ULONG old_protect = 0;
+
+    status = ZwProtectVirtualMemory( ZwCurrentProcess( ), &base_address, &size, new_protect, &old_protect );
+
+    KeUnstackDetachProcess( &apc_state );
+
+    new_protect = old_protect;
+
+    ObDereferenceObject( target_process );
+
+    return status;
+}
