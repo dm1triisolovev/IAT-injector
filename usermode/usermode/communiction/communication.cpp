@@ -11,3 +11,14 @@ operation_callback c_communication::init( std::string module_name, std::string r
 
 	return callback;
 }
+
+bool c_communication::test_operation( operation_callback opertaion ) {
+	packet_base_t packet{};
+
+	packet.opcode = TEST;
+	packet.side = e_side::SERVER;
+
+	opertaion( packet, 0xDEADBEEF );
+
+	return packet.client.test.is_valid;
+}

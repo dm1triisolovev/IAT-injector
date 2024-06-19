@@ -20,6 +20,7 @@ struct client_test {
 struct packet_base_t {
 	op_code opcode;
 	e_side side;
+	uint32_t magic;
 
 	union {
 		union {
@@ -32,4 +33,4 @@ struct packet_base_t {
 	};
 };
 
-typedef PVOID( *operation_callback )( packet_base_t&, PBYTE );
+typedef PVOID( *operation_callback )( packet_base_t&, ULONG64 );
