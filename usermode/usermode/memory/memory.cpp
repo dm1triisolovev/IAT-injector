@@ -6,7 +6,14 @@ NTSTATUS memory_t::read_buffer( uint64_t address, LPVOID lp_buffer, SIZE_T size 
 	if( lp_buffer == 0 )
 		return STATUS_INVALID_PARAMETER;
 
-	return c_communication::copy_memory( this->operation_callback, process_id, address, GetCurrentProcessId( ), uintptr_t( lp_buffer ), size );
+	return c_communication::copy_memory( operation_callback, process_id, address, GetCurrentProcessId( ), uintptr_t( lp_buffer ), size );
+}
+
+NTSTATUS memory_t::write_memory( uint64_t address, uintptr_t dst_address, SIZE_T size ) {
+	if( dst_address == 0 )
+		return STATUS_INVALID_PARAMETER;
+
+	return c_communication::copy_memory( operation_callback, GetCurrentProcessId( ), dst_address, process_id, address, size );
 }
 
 
