@@ -50,3 +50,23 @@ NTSTATUS c_communication::copy_memory( operation_callback operation, ULONGLONG s
 
 	return status;
 }
+
+uint64_t c_communication::get_module_base( operation_callback operation, ULONGLONG process_id, std::wstring module_name ) {
+	packet_base_t packet{};
+
+	packet.opcode = e_opcode::GET_MODULE_BASE_SIZE;
+	packet.side = e_side::SERVER;
+
+	auto& server_req = packet.server;
+	module_name.copy( server_req.get_module.name, module_name.length( ) );
+
+	server_req.get_module.pid = process_id;
+
+	operation( packet, 0xDEADBEEF );
+
+	auto client_req = packet.client.get_module;
+
+	auto base_address = client_req.base_address;
+
+	return base_address;
+}
