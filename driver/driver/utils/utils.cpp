@@ -136,3 +136,53 @@ uintptr_t utils::get_system_base( LPCSTR module_name, PULONG module_size ) {
 
 	return kernel_base;
 }
+
+uint64_t utils::get_module_base( ULONGLONG proc_id, LPCWSTR module_name) {
+	NTSTATUS status = STATUS_SUCCESS;
+
+	PEPROCESS process;
+	status = PsLookupProcessByProcessId( ( HANDLE )proc_id, &process );
+
+	if( !NT_SUCCESS( status ) )
+		return 0;
+
+	KAPC_STATE apc_state;
+	KeStackAttachProcess( ( PRKPROCESS )process, &apc_state );
+
+	PPEB peb = PsGetProcessPeb( process );
+	if( !peb ) {
+		KeUnstackDetachProcess( &apc_state );
+		ObDereferenceObject( process );
+
+		return 0;
+	}
+
+	PPEB_LDR_DATA ldr_data = peb->Ldr;
+
+	if( !ldr_data || !ldr_data->Initialized ) {
+		KeUnstackDetachProcess( &apc_state );
+		ObDereferenceObject( process );
+
+		return 0;
+	}
+
+	for( PLIST_ENTRY entry = ( PLIST_ENTRY )ldr_data->InLoadOrderModuleList.Flink; entry != &ldr_data->InLoadOrderModuleList; entry = ( PLIST_ENTRY )entry->Flink )
+	{
+		PLDR_DATA_TABLE_ENTRY ldr_entry = CONTAINING_RECORD( entry, LDR_DATA_TABLE_ENTRY, InLoadOrderLinks );
+
+		if( str_cmp( module_name, ldr_entry->BaseDllName.Buffer, false ) )
+		{
+			uint64_t module_base = ( uint64_t )ldr_entry->DllBase;
+
+			KeUnstackDetachProcess( &apc_state );
+			ObDereferenceObject( process );
+
+			return module_base;
+		}
+	}
+
+	KeUnstackDetachProcess( &apc_state );
+	ObDereferenceObject( process );
+
+	return 0;
+}
