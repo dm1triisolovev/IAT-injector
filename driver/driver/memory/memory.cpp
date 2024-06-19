@@ -71,3 +71,25 @@ NTSTATUS c_memory::protect_virtual_memory( uint32_t target_proc_id, PVOID base_a
 
     return status;
 }
+
+NTSTATUS c_memory::free_virtual_memory( uint32_t target_proc_id, PVOID base_address ) {
+    NTSTATUS status = STATUS_SUCCESS;
+
+    PEPROCESS target_process;
+    status = PsLookupProcessByProcessId( ( HANDLE )target_proc_id, &target_process );
+
+    if( !NT_SUCCESS( status ) )
+        return STATUS_INVALID_CID;
+
+    KAPC_STATE apc_state;
+    KeStackAttachProcess( ( PRKPROCESS )target_process, &apc_state );
+
+    SIZE_T region_size = 0;
+
+    status = ZwFreeVirtualMemory( ZwCurrentProcess( ), &base_address, &region_size, MEM_RELEASE );
+
+    KeUnstackDetachProcess( &apc_state );
+    ObDereferenceObject( target_process );
+
+    return status;
+}
