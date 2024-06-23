@@ -29,7 +29,7 @@ int main( ) {
 
 	operation_callback operation = c_communication::init( "ntdll.dll", "NtCompareSigningLevels" );
 	if( !operation ) {
-		printf( "[ Usermode ] Failed to init operation callback" );
+		printf( "[ Usermode ] Failed to init operation callback\n" );
 		Sleep( 5000 );
 		exit( -1 );
 	}
@@ -39,11 +39,13 @@ int main( ) {
 	bool status = c_communication::test_operation( operation );
 	if( !status ) {
 		printf( "[ Usermode ] map driver.sys first\n" );
+		Sleep( 5000 );
+		exit( -1 );
 	}
 
 	DWORD pid = utils::get_proc_id( "" );
 	if( !pid ) {
-		printf( "\nWaiting for process..." );
+		printf( "\nWaiting for process...\n" );
 
 		for( ;; Sleep( 200 ) ) {
 			pid = utils::get_proc_id( "Deceit.exe" );
